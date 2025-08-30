@@ -8,7 +8,7 @@ using Il2CppSystem.Collections.Generic;
 
 namespace ExtraRandomized;
 
-// [RegisterTypeInIl2Cpp]
+[RegisterTypeInIl2Cpp]
 public class Psychic : Role
 {
     public override string Description
@@ -88,5 +88,14 @@ public class Psychic : Role
         ActedInfo actedInfo = new ActedInfo(line, selection);
         return actedInfo;
     }
-    
+
+    public Psychic() : base(ClassInjector.DerivedConstructorPointer<Psychic>())
+    {
+        ClassInjector.DerivedConstructorBody((Il2CppObjectBase)this);
+    }
+
+    public Psychic(IntPtr ptr) : base(ptr)
+    {
+        
+    }
 }
