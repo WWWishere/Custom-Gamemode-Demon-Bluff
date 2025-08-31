@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using System.Runtime.ExceptionServices;
 using System.Numerics;
+using Il2CppInterop.Runtime.Runtime;
+using HarmonyLib.Tools;
 
 [assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.2", "SS122")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
@@ -22,14 +24,12 @@ public class ModMain : MelonMod
     public override void OnInitializeMelon()
     {
         ClassInjector.RegisterTypeInIl2Cpp<ExtraRandomized>();
+        ClassInjector.RegisterTypeInIl2Cpp<Psychic>();
     }
 
     public override void OnLateInitializeMelon()
     {
         Application.runInBackground = true;
-
-        // Attempt at Psychic role
-        /*
         Sprite[] sprites = Resources.FindObjectsOfTypeAll<Sprite>();
         CharacterData psychic = new CharacterData();
         psychic.name = "Psychic";
@@ -49,13 +49,12 @@ public class ModMain : MelonMod
         psychic.ifLies = "";
         psychic.notes = "";
         psychic.picking = false;
-        psychic.role = null; // Can't do anything about it
+        psychic.role = new Psychic(); 
         psychic.skins = new Il2CppSystem.Collections.Generic.List<SkinData>();
         psychic.startingAlignment = EAlignment.Good;
         psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         psychic.type = ECharacterType.Villager;
         SaveExRand.customCharList.Add(psychic);
-        */
 
         SaveExRand.leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
         SaveExRand.objScore2 = SaveExRand.leftUI.transform.FindChild("Objective (13)").gameObject;
@@ -128,8 +127,8 @@ public static class SaveExRand
     public static AscensionsData dataER = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
     public static AscensionsData dataBase = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
     public static ExtraRandomized exRand = new ExtraRandomized();
-    public static List<int> useUnused = new List<int> { };
-    public static List<int> poolUnused = new List<int> { 2, 5, 6, 9, 40, 43 };
+    public static List<string> useUnused = new List<string> { };
+    public static List<string> poolUnused = new List<string> { "Mutant", "Wretch", "Marionette", "Puppet", "Saint", "Bounty Hunter" };
     public static List<int> pool = new List<int>();
     public static List<int> poolEvil = new List<int>();
     public static GameObject leftUI;
@@ -143,7 +142,7 @@ public static class SaveExRand
         poolEvil.Clear();
         for (int i = 0; i < charList.Length; i++)
         {
-            if (!poolUnused.Contains(i) || useUnused.Contains(i))
+            if (!poolUnused.Contains(charList[i].name) || useUnused.Contains(charList[i].name))
             {
                 CharacterData data = charList[i];
                 if (data.startingAlignment == EAlignment.Evil)
@@ -308,5 +307,17 @@ public static class SaveExRand
         }
         newPools[pools.Length] = pool;
         Characters.Instance.characterPool = newPools;
+    }
+    public static CharacterData chString(string name)
+    {
+        foreach (CharacterData data in charList)
+        {
+            if (data.name == name)
+            {
+                return data;
+            }
+        }
+        MelonLogger.Msg("Couldn't find CharacterData with name \"" + name + "\"!");
+        return null;
     }
 }

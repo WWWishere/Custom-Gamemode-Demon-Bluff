@@ -88,7 +88,7 @@ public class Psychic : Role
         ActedInfo actedInfo = new ActedInfo(line, selection);
         return actedInfo;
     }
-
+    
     public Psychic() : base(ClassInjector.DerivedConstructorPointer<Psychic>())
     {
         ClassInjector.DerivedConstructorBody((Il2CppObjectBase)this);
