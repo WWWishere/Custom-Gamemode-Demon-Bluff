@@ -24,12 +24,12 @@ public class ExtraRandomized : AdvancedMode
     public Il2CppSystem.Action action4;
     private int refreshCounter = 5;
 
-    public override EGameMode bge()
+    public override EGameMode bha()
     {
         return EGameMode.Standard;
     }
 
-    public override void bgf()
+    public override void bhb()
     {
         GameplayEvents.OnRoundWon += action;
         GameplayEvents.OnDied += action2;
@@ -39,12 +39,12 @@ public class ExtraRandomized : AdvancedMode
         GameData.CurrentVillage = this.currentLevel;
     }
 
-    public override GameMode bgg()
+    public override GameMode bhc()
     {
         return SaveExRand.exRand;
     }
 
-    public override void bgi()
+    public override void bhe()
     {
         GameplayEvents.OnRoundWon -= action;
         GameplayEvents.OnDied -= action2;
@@ -52,18 +52,18 @@ public class ExtraRandomized : AdvancedMode
         UIEvents.OnUIUpdate -= action4;
     }
 
-    public override int bgj()
+    public override int bhf()
     {
         return this.currentLevel;
     }
-    public override int bgk()
+    public override int bhg()
     {
         return this.currentLevel;
     }
 
-    public override void bgp()
+    public override void bhl()
     {
-        this.bgi();
+        this.bhe();
         score = 0;
         currentLevel = 0;
         SaveExRand.exRand = this;
@@ -71,11 +71,11 @@ public class ExtraRandomized : AdvancedMode
         UIEvents.OnUIUpdate.Invoke();
     }
 
-    public override void bgq()
+    public override void bhm()
     {
         int currentLevel = this.currentLevel;
         addScore(levelCompleteBonus + 5 * currentLevel);
-        GameData.bfs();
+        // GameData.bfs();
         UIEvents.OnUIUpdate.Invoke();
 
         SaveExRand.exRand = this;
@@ -87,7 +87,7 @@ public class ExtraRandomized : AdvancedMode
         }
     }
 
-    public override void bgr(int score, int level)
+    public override void bhn(int score, int level)
     {
         if (this.currentLevel < level)
         {
@@ -95,36 +95,36 @@ public class ExtraRandomized : AdvancedMode
         }
     }
 
-    public override int bgt()
+    public override int bho()
     {
         return this.score;
     }
 
-    public override int bgv()
+    public override int bhq()
     {
         return this.currentLevel;
     }
 
-    public override bool bgw()
+    public override bool bhr()
     {
         return false;
     }
 
-    public override string bgx()
+    public override string bhs()
     {
         int bestScore = this.bestScore;
         string str1 = string.Format("<size=24>Highest Score: <color=green>{0} </size></color><size=20>", bestScore);
         return str1;
     }
 
-    public override string bgy()
+    public override string bht()
     {
         int currentScore = this.score;
         string result = string.Format("<color=grey><size=20>Score: </color><color=green><size=24>{0}</color>", currentScore);
         return result;
     }
 
-    public void bhb()
+    public void bhx()
     {
         score = 0;
         currentLevel = 1;
@@ -134,13 +134,13 @@ public class ExtraRandomized : AdvancedMode
         SaveExRand.exRand = this;
     }
 
-    public bool bhc(int mod = 0)
+    public bool bhy(int mod = 0)
     {
         int currentLevel = this.currentLevel;
         return currentLevel <= mod + 5;
     }
 
-    public void bhe(Character ch)
+    public void bia(Character ch)
     {
         CharacterData dataRef = ch.dataRef;
         if (dataRef.type == ECharacterType.Minion || dataRef.type == ECharacterType.Demon)
@@ -153,7 +153,7 @@ public class ExtraRandomized : AdvancedMode
     {
         GameObject leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
         TMP_Text textScore = leftUI.transform.FindChild("Objective (13)/Bg/Text (TMP)").gameObject.GetComponent<TMP_Text>();
-        textScore.text = this.bgy();
+        textScore.text = this.bht();
         TMP_Text textVillage = leftUI.transform.FindChild("Objective (14) A/Bg/Text (TMP)").gameObject.GetComponent<TMP_Text>();
         textVillage.text = string.Format("<color=grey><size=20>Current Village: </color><color=white><size=24>{0}</color>", this.currentLevel);
     }
@@ -166,22 +166,22 @@ public class ExtraRandomized : AdvancedMode
         }
     }
 
-    public override AscensionsData bgl()
+    public override AscensionsData bhh()
     {
         return SaveExRand.dataER;
     }
 
-    public override AscensionsData bgm()
+    public override AscensionsData bhi()
     {
         return SaveExRand.dataER;
     }
 
-    public override bool bgn()
+    public override bool bhj()
     {
         return true;
     }
 
-    public override int bgu()
+    public override int bhp()
     {
         int savedMaxStandardAscension = SavesGame.SavedMaxStandardAscension;
         return savedMaxStandardAscension;
@@ -189,17 +189,17 @@ public class ExtraRandomized : AdvancedMode
     public ExtraRandomized() : base(ClassInjector.DerivedConstructorPointer<ExtraRandomized>())
     {
         ClassInjector.DerivedConstructorBody((Il2CppObjectBase)this);
-        action = new Action(bgq);
-        action2 = new Action(bhb);
-        action3 = new Action<Character>(bhe);
+        action = new Action(bhm);
+        action2 = new Action(bhx);
+        action3 = new Action<Character>(bia);
         action4 = new Action(editUI);
     }
 
     public ExtraRandomized(IntPtr ptr) : base(ptr)
     {
-        action = new Action(bgq);
-        action2 = new Action(bhb);
-        action3 = new Action<Character>(bhe);
+        action = new Action(bhm);
+        action2 = new Action(bhx);
+        action3 = new Action<Character>(bia);
         action4 = new Action(editUI);
     }
 }

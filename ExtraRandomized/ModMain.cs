@@ -14,7 +14,7 @@ using System.Numerics;
 using Il2CppInterop.Runtime.Runtime;
 using HarmonyLib.Tools;
 
-[assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.2", "SS122")]
+[assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.3", "SS122")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace ExtraRandomized;
@@ -25,37 +25,32 @@ public class ModMain : MelonMod
     {
         ClassInjector.RegisterTypeInIl2Cpp<ExtraRandomized>();
         ClassInjector.RegisterTypeInIl2Cpp<Psychic>();
+        // ClassInjector.RegisterTypeInIl2Cpp<Purifier>();
     }
 
     public override void OnLateInitializeMelon()
     {
-        Application.runInBackground = true;
-        Sprite[] sprites = Resources.FindObjectsOfTypeAll<Sprite>();
-        CharacterData psychic = new CharacterData();
-        psychic.name = "Psychic";
-        psychic.abilityUsage = EAbilityUsage.Once;
-        psychic.backgroundArt = sprites[239];
-        psychic.bluffable = true;
-        psychic.bundledCharacters = new Il2CppSystem.Collections.Generic.List<CharacterData>();
-        psychic.canAppearIf = new Il2CppSystem.Collections.Generic.List<CharacterData>();
-        psychic.cardBgColor = new Color(0.26f, 0.1519f, 0.3396f);
-        psychic.cardBorderColor = new Color(0.7133f, 0.339f, 0.8679f);
-        psychic.color = new Color(1f, 0.935f, 0.7302f);
-        psychic.description = "Learn 1 Truthful character";
-        psychic.descriptionCHN = "";
-        psychic.descriptionPL = "";
-        psychic.flavorText = "Sees her friends' darkest secrets.\nUses it to know what food to get them.";
-        psychic.hints = "";
-        psychic.ifLies = "";
-        psychic.notes = "";
-        psychic.picking = false;
-        psychic.role = new Psychic(); 
-        psychic.skins = new Il2CppSystem.Collections.Generic.List<SkinData>();
-        psychic.startingAlignment = EAlignment.Good;
-        psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
-        psychic.type = ECharacterType.Villager;
-        SaveExRand.customCharList.Add(psychic);
 
+        Application.runInBackground = true;
+        SaveExRand.allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
+
+        CharacterData psychic = SaveExRand.createCharData("Psychic", "2 1", ECharacterType.Villager,
+        EAlignment.Good, new Psychic());
+        psychic.bluffable = true;
+        psychic.description = "Learn 1 Truthful character";
+        psychic.flavorText = "Sees her friends' darkest secrets.\nUses it to know what food to get them.";
+        psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        SaveExRand.customCharList.Add(psychic);
+        /*
+        CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", ECharacterType.Minion,
+        EAlignment.Evil, new Purifier());
+        purifier.bluffable = false;
+        purifier.description = "Removes Corruption from adjacent characters.\n\nI Lie and Disguise.";
+        purifier.flavorText = "No one dares to enter his lab.";
+        purifier.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        purifier.tags.Add(ECharacterTag.Bluff);
+        SaveExRand.customCharList.Add(purifier);
+        */
         SaveExRand.leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
         SaveExRand.objScore2 = SaveExRand.leftUI.transform.FindChild("Objective (13)").gameObject;
         SaveExRand.objCurrentVillage2 = SaveExRand.leftUI.transform.FindChild("Objective (14) A").gameObject;
@@ -83,14 +78,14 @@ public class ModMain : MelonMod
             if (SaveExRand.charList.Length > 0)
             {
                 SaveExRand.initExRand();
-                SaveExRand.dataER.bbd();
+                SaveExRand.dataER.bbt();
             }
         }
         // Temp start Game option
         if (Input.GetKeyDown(KeyCode.M))
         {
             SaveExRand.initExRand();
-            GameData.bfq(SaveExRand.exRand);
+            GameData.bgk(SaveExRand.exRand);
             SaveExRand.objScore2.GetComponent<EnableOnMode>().enabled = false;
             SaveExRand.objCurrentVillage2.GetComponent<EnableOnMode>().enabled = false;
             SaveExRand.objScore2.SetActive(true);
@@ -117,11 +112,24 @@ public class ModMain : MelonMod
             }
             LoggerInstance.Msg("Extra pool sizes toggled: " + toggle);
         }
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Il2CppSystem.Collections.Generic.List<Character> characters = Gameplay.CurrentCharacters;
+            Character ch1 = characters[0];
+            LoggerInstance.Msg(ch1.dataRef.name + " " + ch1.id);
+            LoggerInstance.Msg("Logger ti output");
+            Il2CppSystem.Collections.Generic.List<Character> ti = CharactersHelper.tl(characters, ch1);
+            foreach (Character character in ti)
+            {
+                LoggerInstance.Msg(character.dataRef.name + " " + character.id);
+            }
+        }
     }
 }
 
 public static class SaveExRand
 {
+    public static Sprite[] allSprites = Array.Empty<Sprite>();
     public static CharacterData[] charList = Array.Empty<CharacterData>();
     public static List<CharacterData> customCharList = new List<CharacterData>();
     public static AscensionsData dataER = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
@@ -308,7 +316,7 @@ public static class SaveExRand
         newPools[pools.Length] = pool;
         Characters.Instance.characterPool = newPools;
     }
-    public static CharacterData chString(string name)
+    public static CharacterData? chString(string name)
     {
         foreach (CharacterData data in charList)
         {
@@ -319,5 +327,65 @@ public static class SaveExRand
         }
         MelonLogger.Msg("Couldn't find CharacterData with name \"" + name + "\"!");
         return null;
+    }
+    public static Sprite? findSprite(string name)
+    {
+        foreach (Sprite sprite in allSprites)
+        {
+            if (sprite.name == name)
+            {
+                return sprite;
+            }
+        }
+        MelonLogger.Msg("Couldn't find Sprite with name \"" + name + "\"!");
+        return null;
+    }
+    public static CharacterData createCharData(string name, string bgName, ECharacterType type, EAlignment alignment, Role role, bool picking = false, EAbilityUsage abilityUsage = EAbilityUsage.Once)
+    {
+        // unadded: tags, description, notes, bluffable
+        CharacterData newData = new CharacterData();
+        newData.name = name;
+        newData.abilityUsage = abilityUsage;
+        newData.backgroundArt = findSprite(bgName);
+        newData.bundledCharacters = new Il2CppSystem.Collections.Generic.List<CharacterData>();
+        newData.canAppearIf = new Il2CppSystem.Collections.Generic.List<CharacterData>();
+        switch (type)
+        {
+            case ECharacterType.Villager:
+                newData.artBgColor = new Color(0.111f, 0.0833f, 0.1415f);
+                newData.cardBgColor = new Color(0.26f, 0.1519f, 0.3396f);
+                newData.cardBorderColor = new Color(0.7133f, 0.339f, 0.8679f);
+                newData.color = new Color(1f, 0.935f, 0.7302f);
+                break;
+            case ECharacterType.Outcast:
+                newData.artBgColor = new Color(0.3679f, 0.2014f, 0.1541f);
+                newData.cardBgColor = new Color(0.102f, 0.0667f, 0.0392f);
+                newData.cardBorderColor = new Color(0.7843f, 0.6471f, 0f);
+                newData.color = new Color(0.9659f, 1f, 0.4472f);
+                break;
+            case ECharacterType.Minion:
+                newData.artBgColor = new Color(1f, 0f, 0f);
+                newData.cardBgColor = new Color(0.0941f, 0.0431f, 0.0431f);
+                newData.cardBorderColor = new Color(0.8208f, 0f, 0.0241f);
+                newData.color = new Color(0.8491f, 0.4555f, 0f);
+                break;
+            case ECharacterType.Demon:
+                newData.artBgColor = new Color(1f, 0f, 0f);
+                newData.cardBgColor = new Color(0.0941f, 0.0431f, 0.0431f);
+                newData.cardBorderColor = new Color(0.8208f, 0f, 0.0241f);
+                newData.color = new Color(1f, 0.3811f, 0.3811f);
+                break;
+        }
+        newData.descriptionCHN = "";
+        newData.descriptionPL = "";
+        newData.hints = "";
+        newData.ifLies = "";
+        newData.notes = "";
+        newData.picking = picking;
+        newData.role = role;
+        newData.skins = new Il2CppSystem.Collections.Generic.List<SkinData>();
+        newData.startingAlignment = alignment;
+        newData.type = type;
+        return newData;
     }
 }

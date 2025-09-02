@@ -19,7 +19,7 @@ public class Psychic : Role
         }
     }
 
-    public override ActedInfo bbw(Character charRef)
+    public override ActedInfo bcq(Character charRef)
     {
         List<Character> characters = Gameplay.CurrentCharacters;
         System.Collections.Generic.List<Character> newList = new System.Collections.Generic.List<Character>();
@@ -31,8 +31,8 @@ public class Psychic : Role
             bool evil = false;
             if (character.statuses != null)
             {
-                corrupted = character.statuses.fn(ECharacterStatus.Corrupted) && character.dataRef.name != "Confessor";
-                evil = character.bluff != null && !character.statuses.fn(ECharacterStatus.HealthyBluff);
+                corrupted = character.statuses.fo(ECharacterStatus.Corrupted) && character.dataRef.name != "Confessor";
+                evil = character.bluff != null && !character.statuses.fo(ECharacterStatus.HealthyBluff);
             }
             if (!(corrupted || evil))
             {
@@ -46,23 +46,24 @@ public class Psychic : Role
         return actedInfo;
     }
 
-    public override void bby(ETriggerPhase trigger, Character charRef)
+    public override void bcs(ETriggerPhase trigger, Character charRef)
     {
+        MelonLogger.Msg("Psychic bcs call: " + trigger);
         if (trigger == ETriggerPhase.Day)
         {
-            this.onActed.Invoke(this.bbw(charRef));
+            this.onActed.Invoke(this.bcq(charRef));
         }
     }
 
-    public override void bcd(ETriggerPhase trigger, Character charRef)
+    public override void bcx(ETriggerPhase trigger, Character charRef)
     {
         if (trigger == ETriggerPhase.Day)
         {
-            this.onActed.Invoke(this.bbx(charRef));
+            this.onActed.Invoke(this.bcr(charRef));
         }
     }
 
-    public override ActedInfo bbx(Character charRef)
+    public override ActedInfo bcr(Character charRef)
     {
         List<Character> characters = Gameplay.CurrentCharacters;
         System.Collections.Generic.List<Character> newList = new System.Collections.Generic.List<Character>();
@@ -74,8 +75,8 @@ public class Psychic : Role
             bool evil = false;
             if (character.statuses != null)
             {
-                corrupted = character.statuses.fn(ECharacterStatus.Corrupted) && character.dataRef.name != "Confessor";
-                evil = character.bluff != null && !character.statuses.fn(ECharacterStatus.HealthyBluff);
+                corrupted = character.statuses.fo(ECharacterStatus.Corrupted) && character.dataRef.name != "Confessor";
+                evil = character.bluff != null && !character.statuses.fo(ECharacterStatus.HealthyBluff);
             }
             if (corrupted || evil)
             {
