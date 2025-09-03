@@ -12,7 +12,7 @@ using JetBrains.Annotations;
 using System.Runtime.ExceptionServices;
 using System.Numerics;
 using Il2CppInterop.Runtime.Runtime;
-using HarmonyLib.Tools;
+using System.Reflection;
 
 [assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.3", "SS122")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
@@ -25,15 +25,14 @@ public class ModMain : MelonMod
     {
         ClassInjector.RegisterTypeInIl2Cpp<ExtraRandomized>();
         ClassInjector.RegisterTypeInIl2Cpp<Psychic>();
-        // ClassInjector.RegisterTypeInIl2Cpp<Purifier>();
+        ClassInjector.RegisterTypeInIl2Cpp<Purifier>();
+        // ClassInjector.RegisterTypeInIl2Cpp<Hypnotist>();
     }
 
     public override void OnLateInitializeMelon()
     {
-
         Application.runInBackground = true;
         SaveExRand.allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
-
         CharacterData psychic = SaveExRand.createCharData("Psychic", "2 1", ECharacterType.Villager,
         EAlignment.Good, new Psychic());
         psychic.bluffable = true;
@@ -41,15 +40,25 @@ public class ModMain : MelonMod
         psychic.flavorText = "Sees her friends' darkest secrets.\nUses it to know what food to get them.";
         psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         SaveExRand.customCharList.Add(psychic);
-        /*
+        
         CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", ECharacterType.Minion,
         EAlignment.Evil, new Purifier());
         purifier.bluffable = false;
         purifier.description = "Removes Corruption from adjacent characters.\n\nI Lie and Disguise.";
         purifier.flavorText = "No one dares to enter his lab.";
         purifier.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
-        purifier.tags.Add(ECharacterTag.Bluff);
+        purifier.tags.Add(ECharacterTag.Corrupt);
         SaveExRand.customCharList.Add(purifier);
+        Characters.Instance.startGameActOrder = insertAfterAct("Alchemist", purifier);
+        /*
+        CharacterData hypno = SaveExRand.createCharData("Hypnotist", "evil", ECharacterType.Demon,
+        EAlignment.Evil, new Hypnotist());
+        hypno.bluffable = false;
+        hypno.description = "<b>Game Start:</b>\nOne random Villager becomes an unknown Minion.\n\nI Lie and Disguise.";
+        hypno.flavorText = "You look nice today. How about we go out and have a lunch together?";
+        hypno.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        SaveExRand.customCharList.Add(hypno);
+        Characters.Instance.startGameActOrder = insertAfterAct("Baa", hypno);
         */
         SaveExRand.leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
         SaveExRand.objScore2 = SaveExRand.leftUI.transform.FindChild("Objective (13)").gameObject;
@@ -112,18 +121,34 @@ public class ModMain : MelonMod
             }
             LoggerInstance.Msg("Extra pool sizes toggled: " + toggle);
         }
-        if (Input.GetKeyDown(KeyCode.B))
+    }
+    public CharacterData[] insertAfterAct(string previous, CharacterData data)
+    {
+        CharacterData[] actList = Characters.Instance.startGameActOrder;
+        int actSize = actList.Length;
+        CharacterData[] newActList = new CharacterData[actSize + 1];
+        bool inserted = false;
+        for (int i = 0; i < actSize; i++)
         {
-            Il2CppSystem.Collections.Generic.List<Character> characters = Gameplay.CurrentCharacters;
-            Character ch1 = characters[0];
-            LoggerInstance.Msg(ch1.dataRef.name + " " + ch1.id);
-            LoggerInstance.Msg("Logger ti output");
-            Il2CppSystem.Collections.Generic.List<Character> ti = CharactersHelper.tl(characters, ch1);
-            foreach (Character character in ti)
+            if (inserted)
             {
-                LoggerInstance.Msg(character.dataRef.name + " " + character.id);
+                newActList[i + 1] = actList[i];
+            }
+            else
+            {
+                newActList[i] = actList[i];
+                if (actList[i].name == previous)
+                {
+                    newActList[i + 1] = data;
+                    inserted = true;
+                }
             }
         }
+        if (!inserted)
+        {
+            LoggerInstance.Msg("");
+        }
+        return newActList;
     }
 }
 
@@ -135,7 +160,7 @@ public static class SaveExRand
     public static AscensionsData dataER = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
     public static AscensionsData dataBase = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
     public static ExtraRandomized exRand = new ExtraRandomized();
-    public static List<string> useUnused = new List<string> { };
+    public static List<string> useUnused = new List<string> { "Saint" };
     public static List<string> poolUnused = new List<string> { "Mutant", "Wretch", "Marionette", "Puppet", "Saint", "Bounty Hunter" };
     public static List<int> pool = new List<int>();
     public static List<int> poolEvil = new List<int>();

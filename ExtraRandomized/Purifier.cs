@@ -38,7 +38,6 @@ public class Purifier : Minion
         {
             character.statuses.fn();
         }
-        MelonLogger.Msg("Total corruptions found: " + list.Count);
     }
     public List<Character> bdf(Character charRef)
     {
@@ -48,11 +47,9 @@ public class Purifier : Minion
         Character[] neighbors = { list1[1], list1[list1.Count - 1] };
         foreach (Character character in neighbors)
         {
-            MelonLogger.Msg("Checking neighbor at: " + character.id);
-            if (character.statuses.statuses.Contains(ECharacterStatus.Corrupted))
+            if (character.statuses.statuses.Contains(ECharacterStatus.Corrupted) && character.dataRef.name != "Drunk")
             {
                 list2.Add(character);
-                MelonLogger.Msg(character.id + " is Corrupted!");
             }
         }
         return list2;
@@ -67,14 +64,6 @@ public class Purifier : Minion
         if (trigger == ETriggerPhase.Start)
         {
             this.bde(charRef);
-        }
-    }
-    public override void bcx(ETriggerPhase trigger, Character charRef)
-    {
-        if (trigger == ETriggerPhase.Start)
-        {
-            AlchemistRuntimeData alchemistRuntimeData = new AlchemistRuntimeData(0);
-            charRef.dj(new RuntimeCharacterData(alchemistRuntimeData.Pointer));
         }
     }
     public Purifier() : base(ClassInjector.DerivedConstructorPointer<Purifier>())

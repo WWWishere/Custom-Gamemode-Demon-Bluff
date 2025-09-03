@@ -48,7 +48,6 @@ public class Psychic : Role
 
     public override void bcs(ETriggerPhase trigger, Character charRef)
     {
-        MelonLogger.Msg("Psychic bcs call: " + trigger);
         if (trigger == ETriggerPhase.Day)
         {
             this.onActed.Invoke(this.bcq(charRef));
@@ -89,7 +88,7 @@ public class Psychic : Role
         ActedInfo actedInfo = new ActedInfo(line, selection);
         return actedInfo;
     }
-    
+
     public Psychic() : base(ClassInjector.DerivedConstructorPointer<Psychic>())
     {
         ClassInjector.DerivedConstructorBody((Il2CppObjectBase)this);
@@ -97,6 +96,6 @@ public class Psychic : Role
 
     public Psychic(IntPtr ptr) : base(ptr)
     {
-        
+
     }
 }
