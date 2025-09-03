@@ -160,7 +160,7 @@ public static class SaveExRand
     public static AscensionsData dataER = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
     public static AscensionsData dataBase = UnityEngine.Object.Instantiate(ProjectContext.Instance.gameData.advancedAscension);
     public static ExtraRandomized exRand = new ExtraRandomized();
-    public static List<string> useUnused = new List<string> { "Saint" };
+    public static List<string> useUnused = new List<string> { };
     public static List<string> poolUnused = new List<string> { "Mutant", "Wretch", "Marionette", "Puppet", "Saint", "Bounty Hunter" };
     public static List<int> pool = new List<int>();
     public static List<int> poolEvil = new List<int>();
