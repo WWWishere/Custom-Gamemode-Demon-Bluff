@@ -13,6 +13,7 @@ using System.Runtime.ExceptionServices;
 using System.Numerics;
 using Il2CppInterop.Runtime.Runtime;
 using System.Reflection;
+using Il2CppInterop.Runtime;
 
 [assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.3", "SS122")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
@@ -26,40 +27,76 @@ public class ModMain : MelonMod
         ClassInjector.RegisterTypeInIl2Cpp<ExtraRandomized>();
         ClassInjector.RegisterTypeInIl2Cpp<Psychic>();
         ClassInjector.RegisterTypeInIl2Cpp<Purifier>();
-        // ClassInjector.RegisterTypeInIl2Cpp<Hypnotist>();
+        ClassInjector.RegisterTypeInIl2Cpp<Hypnotist>();
+        ClassInjector.RegisterTypeInIl2Cpp<BetterBaa>();
+        ClassInjector.RegisterTypeInIl2Cpp<Baatender>();
+        // ClassInjector.RegisterTypeInIl2Cpp<Joker>();
     }
 
     public override void OnLateInitializeMelon()
     {
         Application.runInBackground = true;
-        SaveExRand.allSprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        var loadedAllSprites = Resources.FindObjectsOfTypeAll(Il2CppSystem.Type.GetTypeFromHandle(RuntimeReflectionHelper.GetRuntimeTypeHandle<Sprite>()));
+        SaveExRand.allSprites = new Sprite[loadedAllSprites.Length];
+        for (int i = 0; i < loadedAllSprites.Length; i++)
+        {
+            SaveExRand.allSprites[i] = loadedAllSprites[i]!.Cast<Sprite>();
+        }
         CharacterData psychic = SaveExRand.createCharData("Psychic", "2 1", ECharacterType.Villager,
         EAlignment.Good, new Psychic());
         psychic.bluffable = true;
-        psychic.description = "Learn 1 Truthful character";
-        psychic.flavorText = "Sees her friends' darkest secrets.\nUses it to know what food to get them.";
+        psychic.description = "Learn 1 Truthful character.";
+        psychic.flavorText = "\"Sees her friends' darkest secrets.\nUses it to know what food to get them.\"";
         psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         SaveExRand.customCharList.Add(psychic);
-        
-        CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", ECharacterType.Minion,
-        EAlignment.Evil, new Purifier());
+
+        CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", (ECharacterType) 30, (EAlignment) 20, (Role) new Purifier());
         purifier.bluffable = false;
         purifier.description = "Removes Corruption from adjacent characters.\n\nI Lie and Disguise.";
-        purifier.flavorText = "No one dares to enter his lab.";
+        purifier.flavorText = "\"No one dares to enter his lab.\"";
         purifier.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         purifier.tags.Add(ECharacterTag.Corrupt);
         SaveExRand.customCharList.Add(purifier);
         Characters.Instance.startGameActOrder = insertAfterAct("Alchemist", purifier);
-        /*
+
         CharacterData hypno = SaveExRand.createCharData("Hypnotist", "evil", ECharacterType.Demon,
         EAlignment.Evil, new Hypnotist());
         hypno.bluffable = false;
         hypno.description = "<b>Game Start:</b>\nOne random Villager becomes an unknown Minion.\n\nI Lie and Disguise.";
-        hypno.flavorText = "You look nice today. How about we go out and have a lunch together?";
+        hypno.flavorText = "\"You look nice today. How about we go out and have a lunch together?\"";
         hypno.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         SaveExRand.customCharList.Add(hypno);
         Characters.Instance.startGameActOrder = insertAfterAct("Baa", hypno);
+
+        CharacterData betterBaa = SaveExRand.createCharData("Better Baa", "evil", ECharacterType.Demon,
+        EAlignment.Evil, new BetterBaa());
+        betterBaa.art_cute = SaveExRand.findSprite("demon06a1");
+        betterBaa.bluffable = false;
+        betterBaa.description = "One random Minion is added to the Deck View.\n\nI Lie and Disguise.";
+        betterBaa.flavorText = "\"I am better than Baa.\nAnd I will prove it.\"";
+        betterBaa.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        SaveExRand.customCharList.Add(betterBaa);
+        Characters.Instance.startGameActOrder = insertAfterAct("Counsellor", betterBaa);
+
+        CharacterData baatender = SaveExRand.createCharData("Baatender", "evil", ECharacterType.Demon,
+        EAlignment.Evil, new Baatender());
+        baatender.art_cute = SaveExRand.findSprite("demon06a1");
+        baatender.bluffable = false;
+        baatender.description = "One random Outcast is added to the Deck View.\nA random Villager becomes Drunk.\n\nI Lie and Disguise.";
+        baatender.flavorText = "\"Ender of Baats.\nOr Tender of Baas\"";
+        baatender.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        SaveExRand.customCharList.Add(baatender);
+        Characters.Instance.startGameActOrder = insertAfterAct("Counsellor", baatender);
+        /*
+        CharacterData joker = SaveExRand.createCharData("Joker", "3b", ECharacterType.Outcast, EAlignment.Good,
+        new Joker());
+        joker.bluffable = false;
+        joker.description = "Will disguise as a Villager in the Deck.\nWill always Lie.\nIf Executed, kill all Characters with the same appearance.";
+        joker.flavorText = "\"@Victim, if you can read this, I also need a line to put here.\"";
+        joker.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        SaveExRand.customCharList.Add(joker);
         */
+
         SaveExRand.leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
         SaveExRand.objScore2 = SaveExRand.leftUI.transform.FindChild("Objective (13)").gameObject;
         SaveExRand.objCurrentVillage2 = SaveExRand.leftUI.transform.FindChild("Objective (14) A").gameObject;
@@ -83,12 +120,20 @@ public class ModMain : MelonMod
     {
         if (SaveExRand.charList.Length == 0)
         {
-            SaveExRand.charList = Resources.FindObjectsOfTypeAll<CharacterData>();
-            if (SaveExRand.charList.Length > 0)
+            var loadedCharList = Resources.FindObjectsOfTypeAll(Il2CppType.Of<CharacterData>());
+            if (loadedCharList != null)
             {
-                SaveExRand.initExRand();
-                SaveExRand.dataER.bbt();
+                SaveExRand.charList = new CharacterData[loadedCharList.Length];
+                for (int i = 0; i < loadedCharList.Length; i++)
+                {
+                    SaveExRand.charList[i] = loadedCharList[i]!.Cast<CharacterData>();
+                }
             }
+            if (SaveExRand.charList.Length > 0)
+                {
+                    SaveExRand.initExRand();
+                    SaveExRand.dataER.bbt();
+                }
         }
         // Temp start Game option
         if (Input.GetKeyDown(KeyCode.M))
@@ -223,7 +268,7 @@ public static class SaveExRand
                 minSize = 2;
                 maxSize = 15;
             }
-            for (int m = minSize; m < maxSize + 1; m++)
+            for (int m = maxSize; m < maxSize + 1; m++)
             {
                 int[] roleCounts = randRoleCount(m);
                 CharactersCount newCharCount = new CharactersCount(m, roleCounts[0], roleCounts[1], roleCounts[2], roleCounts[3]);

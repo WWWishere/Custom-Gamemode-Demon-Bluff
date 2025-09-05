@@ -15,7 +15,7 @@ public class Hypnotist : Demon
     {
         get
         {
-            return "1 random Villager becomes an unknown Minion";
+            return "1 random Villager becomes an unknown Minion.";
         }
     }
     public override void bcs(ETriggerPhase trigger, Character charRef)
@@ -48,6 +48,7 @@ public class Hypnotist : Demon
             return;
         }
         Character randomCharacter = list6[UnityEngine.Random.RandomRangeInt(0, list6.Count)];
+        randomCharacter.statuses.fm(ECharacterStatus.MessedUpByEvil, charRef, null);
         randomCharacter.dv(randomData);
     }
     public Hypnotist() : base(ClassInjector.DerivedConstructorPointer<Hypnotist>())

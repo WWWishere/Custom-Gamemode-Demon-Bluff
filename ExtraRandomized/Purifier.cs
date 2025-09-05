@@ -16,7 +16,7 @@ public class Purifier : Minion
     {
         get
         {
-            return "Removes Corruption from adjacent characters.\n\nI Lie and Disguise.";;
+            return "Removes Corruption from adjacent characters.";
         }
     }
     public AlchemistRuntimeData? bdd(Character charRef)
@@ -30,7 +30,6 @@ public class Purifier : Minion
     }
     private void bde(Character charRef)
     {
-        MelonLogger.Msg("Checking Purifier at: " + charRef.id);
         List<Character> list = this.bdf(charRef);
         AlchemistRuntimeData alchemistRuntimeData = new AlchemistRuntimeData(list.Count);
         charRef.dj(new RuntimeCharacterData(alchemistRuntimeData.Pointer));
@@ -60,7 +59,6 @@ public class Purifier : Minion
     }
     public override void bcs(ETriggerPhase trigger, Character charRef)
     {
-        MelonLogger.Msg("Purifier bcs call: " + trigger);
         if (trigger == ETriggerPhase.Start)
         {
             this.bde(charRef);

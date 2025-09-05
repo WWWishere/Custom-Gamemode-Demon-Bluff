@@ -31,7 +31,7 @@ public class Psychic : Role
             bool evil = false;
             if (character.statuses != null)
             {
-                corrupted = character.statuses.fo(ECharacterStatus.Corrupted) && character.dataRef.name != "Confessor";
+                corrupted = character.statuses.fo(ECharacterStatus.Corrupted) && character.dq().name != "Confessor";
                 evil = character.bluff != null && !character.statuses.fo(ECharacterStatus.HealthyBluff);
             }
             if (!(corrupted || evil))
@@ -74,7 +74,7 @@ public class Psychic : Role
             bool evil = false;
             if (character.statuses != null)
             {
-                corrupted = character.statuses.fo(ECharacterStatus.Corrupted) && character.dataRef.name != "Confessor";
+                corrupted = character.statuses.fo(ECharacterStatus.Corrupted) && character.dq().name != "Confessor";
                 evil = character.bluff != null && !character.statuses.fo(ECharacterStatus.HealthyBluff);
             }
             if (corrupted || evil)
