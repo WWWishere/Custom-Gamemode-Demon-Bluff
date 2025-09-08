@@ -151,11 +151,19 @@ public class ExtraRandomized : AdvancedMode
     }
     public void editUI()
     {
-        GameObject leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
-        TMP_Text textScore = leftUI.transform.FindChild("Objective (13)/Bg/Text (TMP)").gameObject.GetComponent<TMP_Text>();
-        textScore.text = this.bht();
-        TMP_Text textVillage = leftUI.transform.FindChild("Objective (14) A/Bg/Text (TMP)").gameObject.GetComponent<TMP_Text>();
-        textVillage.text = string.Format("<color=grey><size=20>Current Village: </color><color=white><size=24>{0}</color>", this.currentLevel);
+        GameObject objScore2 = SaveExRand.objScore2;
+        GameObject objCurrentVillage2 = SaveExRand.objCurrentVillage2;
+        if (objScore2 == null)
+        {
+            return;
+        }
+        TMP_Text textScore = objScore2.transform.FindChild("Bg/Text (TMP)").gameObject.GetComponent<TMP_Text>();
+        TMP_Text textVillage = objCurrentVillage2.transform.FindChild("Bg/Text (TMP)").gameObject.GetComponent<TMP_Text>();
+        if (textScore != null)
+        {
+            textScore.text = this.bht();
+            textVillage.text = string.Format("<color=grey><size=20>Current Village: </color><color=white><size=24>{0}</color>", this.currentLevel);
+        }
     }
     private void addScore(int amt)
     {

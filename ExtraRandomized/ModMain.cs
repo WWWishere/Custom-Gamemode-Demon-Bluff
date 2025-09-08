@@ -14,14 +14,18 @@ using System.Numerics;
 using Il2CppInterop.Runtime.Runtime;
 using System.Reflection;
 using Il2CppInterop.Runtime;
+using Il2CppTMPro;
+using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.3", "SS122")]
+[assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.4", "SS122")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace ExtraRandomized;
 
 public class ModMain : MelonMod
 {
+    string sizeDesc = "Village sizes can be <color=white>6-11</color> cards.\n\nPress 'N' to change to 2-15 cards.";
+    string cusDesc = "\n\nCustom/unused roles are <color=red>disabled.</color> Press 'B' to change.";
     public override void OnInitializeMelon()
     {
         ClassInjector.RegisterTypeInIl2Cpp<ExtraRandomized>();
@@ -30,7 +34,7 @@ public class ModMain : MelonMod
         ClassInjector.RegisterTypeInIl2Cpp<Hypnotist>();
         ClassInjector.RegisterTypeInIl2Cpp<BetterBaa>();
         ClassInjector.RegisterTypeInIl2Cpp<Baatender>();
-        // ClassInjector.RegisterTypeInIl2Cpp<Joker>();
+        ClassInjector.RegisterTypeInIl2Cpp<Joker>();
     }
 
     public override void OnLateInitializeMelon()
@@ -50,7 +54,7 @@ public class ModMain : MelonMod
         psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         SaveExRand.customCharList.Add(psychic);
 
-        CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", (ECharacterType) 30, (EAlignment) 20, (Role) new Purifier());
+        CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", (ECharacterType)30, (EAlignment)20, (Role)new Purifier());
         purifier.bluffable = false;
         purifier.description = "Removes Corruption from adjacent characters.\n\nI Lie and Disguise.";
         purifier.flavorText = "\"No one dares to enter his lab.\"";
@@ -91,15 +95,29 @@ public class ModMain : MelonMod
         CharacterData joker = SaveExRand.createCharData("Joker", "3b", ECharacterType.Outcast, EAlignment.Good,
         new Joker());
         joker.bluffable = false;
-        joker.description = "Will disguise as a Villager in the Deck.\nWill always Lie.\nIf Executed, kill all Characters with the same appearance.";
+        joker.description = "I disguise as a Villager in the Deck.\nI always Lie.\nIf Executed, kill all Characters with the same appearance.";
         joker.flavorText = "\"@Victim, if you can read this, I also need a line to put here.\"";
         joker.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         SaveExRand.customCharList.Add(joker);
         */
+        foreach (CharacterData customData in SaveExRand.customCharList)
+        {
+            SaveExRand.poolUnused.Add(customData.name);
+        }
 
         SaveExRand.leftUI = GameObject.Find("Game/Gameplay/Content/Canvas/UI/Objectives_Left");
-        SaveExRand.objScore2 = SaveExRand.leftUI.transform.FindChild("Objective (13)").gameObject;
-        SaveExRand.objCurrentVillage2 = SaveExRand.leftUI.transform.FindChild("Objective (14) A").gameObject;
+        SaveExRand.objScore2 = GameObject.Instantiate(SaveExRand.leftUI.transform.FindChild("Objective (13)").gameObject);
+        SaveExRand.objCurrentVillage2 = GameObject.Instantiate(SaveExRand.leftUI.transform.FindChild("Objective (14) A").gameObject);
+        SaveExRand.objScore2.name = "Objectives (13) ER";
+        SaveExRand.objCurrentVillage2.name = "Objectives (14) ER";
+        SaveExRand.objScore2.transform.SetParent(SaveExRand.leftUI.transform);
+        SaveExRand.objCurrentVillage2.transform.SetParent(SaveExRand.leftUI.transform);
+        SaveExRand.objScore2.GetComponent<EnableOnMode>().mode = SaveExRand.exRand;
+        SaveExRand.objCurrentVillage2.GetComponent<EnableOnMode>().mode = SaveExRand.exRand;
+        SaveExRand.objScore2.transform.localScale = new UnityEngine.Vector3(1f, 1f, 1f);
+        SaveExRand.objCurrentVillage2.transform.localScale = new UnityEngine.Vector3(1f, 1f, 1f);
+        SaveExRand.objScore2.SetActive(true);
+        SaveExRand.objCurrentVillage2.SetActive(true);
         GameObject circle2 = SaveExRand.createCircle(2);
         SaveExRand.addToCharsPool(circle2.GetComponent<CharactersPool>());
         GameObject circle3 = SaveExRand.createCircle(3);
@@ -114,6 +132,40 @@ public class ModMain : MelonMod
         SaveExRand.addToCharsPool(circle13.GetComponent<CharactersPool>());
         GameObject circle12 = SaveExRand.createCircle(12);
         SaveExRand.addToCharsPool(circle12.GetComponent<CharactersPool>());
+        GameObject menuScreen = GameObject.Find("Game/Menu/GameModes/Canvas (1)");
+        GameObject cardSelect = GameObject.Find("Game/Menu/GameModes/Canvas (1)/ButtonsLayout");
+        GameObject roguelikeCard = GameObject.Find("Game/Menu/GameModes/Canvas (1)/ButtonsLayout/Roguelike");
+        GameObject erCard = UnityEngine.Object.Instantiate(roguelikeCard, cardSelect.transform);
+        erCard.name = "ExtraRand";
+        erCard.transform.SetSiblingIndex(3);
+        GameObject erGameMode = erCard.transform.FindChild("GameModeCard1").gameObject;
+        ChangeGameModeButton changeGameModeButton = erGameMode.GetComponent<ChangeGameModeButton>();
+        GameModeCard gameModeCard = erGameMode.GetComponent<GameModeCard>();
+        changeGameModeButton.mode = SaveExRand.exRand;
+        gameModeCard.gameMode = SaveExRand.exRand;
+        GameObject textTitle = erGameMode.transform.FindChild("Text").gameObject;
+        GameObject textDesc = erGameMode.transform.FindChild("Text (2)").gameObject;
+        textTitle.GetComponent<TextMeshProUGUI>().text = "Extra Randomized";
+        textDesc.GetComponent<TextMeshProUGUI>().text = "Villages are completely randomized." + sizeDesc + cusDesc;
+        GameObject advGameMode = GameObject.Find("Game/Menu/GameModes/Canvas (1)/ButtonsLayout/GameObject/GameModeCard2");
+        GameObject advCard = advGameMode.transform.parent.gameObject;
+        SaveExRand.middleCards[0] = advCard;
+        SaveExRand.middleCards[1] = erCard;
+        erGameMode.GetComponent<GenericButton>().onClick.AddListener(new Action(SaveExRand.initExRand));
+        erCard.SetActive(false);
+
+        GameObject compendButton = GameObject.Find("Game/Menu/GameModes/Canvas (1)/Button1");
+        GameObject switchCardButtonMain = GameObject.Instantiate(compendButton);
+        switchCardButtonMain.name = "ButtonSwitch";
+        switchCardButtonMain.transform.SetParent(menuScreen.transform);
+        GameObject switchCardButton = switchCardButtonMain.transform.GetChild(0).gameObject;
+        GenericButton switchCard = switchCardButton.GetComponent<GenericButton>();
+        switchCard.text.text = "Switch!";
+        switchCardButtonMain.transform.localScale = new UnityEngine.Vector3(0.6f, 0.6f, 0.6f);
+        switchCardButtonMain.transform.localPosition = new UnityEngine.Vector3(0f, -270f, 0f);
+        switchCard.onClick = new UnityEngine.Events.UnityEvent();
+        switchCard.onClick.AddListener(new Action(SaveExRand.swapMiddleCards));
+        switchCardButtonMain.SetActive(true);
     }
 
     public override void OnUpdate()
@@ -130,41 +182,50 @@ public class ModMain : MelonMod
                 }
             }
             if (SaveExRand.charList.Length > 0)
-                {
-                    SaveExRand.initExRand();
-                    SaveExRand.dataER.bbt();
-                }
+            {
+                SaveExRand.initExRand();
+                SaveExRand.dataER.bbt();
+            }
         }
         // Temp start Game option
         if (Input.GetKeyDown(KeyCode.M))
         {
             SaveExRand.initExRand();
             GameData.bgk(SaveExRand.exRand);
-            SaveExRand.objScore2.GetComponent<EnableOnMode>().enabled = false;
-            SaveExRand.objCurrentVillage2.GetComponent<EnableOnMode>().enabled = false;
-            SaveExRand.objScore2.SetActive(true);
-            SaveExRand.objCurrentVillage2.SetActive(true);
-        }
-        if (SaveExRand.objScore2 != null)
-        {
-            if (SaveExRand.objScore2.GetComponent<EnableOnMode>().enabled == false)
-            {
-                if (GameData.GameMode.GetType() != typeof(ExtraRandomized))
-                {
-                    SaveExRand.objScore2.GetComponent<EnableOnMode>().enabled = true;
-                    SaveExRand.objCurrentVillage2.GetComponent<EnableOnMode>().enabled = true;
-                }
-            }
         }
         if (Input.GetKeyDown(KeyCode.N))
         {
+            GameObject textDesc = GameObject.Find("Game/Menu/GameModes/Canvas (1)/ButtonsLayout/ExtraRand/GameModeCard1/Text (2)");
             SaveExRand.limitPoolSize = !SaveExRand.limitPoolSize;
-            string toggle = "on";
             if (SaveExRand.limitPoolSize)
             {
-                toggle = "off";
+                sizeDesc = "Village sizes can be <color=white>6-11</color> cards.\n\nPress 'N' to change to 2-15 cards.";
             }
-            LoggerInstance.Msg("Extra pool sizes toggled: " + toggle);
+            else
+            {
+                sizeDesc = "Village sizes can be <color=white>2-15</color> cards.\n\nPress 'N' to change to 6-11 cards.";
+            }
+            textDesc.GetComponent<TextMeshProUGUI>().text = "Villages are completely randomized." + sizeDesc + cusDesc;
+        }
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            GameObject textDesc = GameObject.Find("Game/Menu/GameModes/Canvas (1)/ButtonsLayout/ExtraRand/GameModeCard1/Text (2)");
+            if (SaveExRand.useUnused.Count < 1)
+            {
+                SaveExRand.useUnused.Add("Saint");
+                SaveExRand.useUnused.Add("Mutant");
+                foreach (CharacterData customData in SaveExRand.customCharList)
+                {
+                    SaveExRand.useUnused.Add(customData.name);
+                }
+                cusDesc = "\n\nCustom/unused roles are <color=green>enabled.</color> Press 'B' to change.";
+            }
+            else
+            {
+                SaveExRand.useUnused.Clear();
+                cusDesc = "\n\nCustom/unused roles are <color=red>disabled.</color> Press 'B' to change.";
+            }
+            textDesc.GetComponent<TextMeshProUGUI>().text = "Villages are completely randomized." + sizeDesc + cusDesc;
         }
     }
     public CharacterData[] insertAfterAct(string previous, CharacterData data)
@@ -213,6 +274,8 @@ public static class SaveExRand
     public static GameObject objScore2;
     public static GameObject objCurrentVillage2;
     public static bool limitPoolSize = true;
+    public static GameObject[] middleCards = new GameObject[2];
+    public static int cardIndex = 0;
 
     public static void initExRand()
     {
@@ -268,7 +331,7 @@ public static class SaveExRand
                 minSize = 2;
                 maxSize = 15;
             }
-            for (int m = maxSize; m < maxSize + 1; m++)
+            for (int m = minSize; m < maxSize + 1; m++)
             {
                 int[] roleCounts = randRoleCount(m);
                 CharactersCount newCharCount = new CharactersCount(m, roleCounts[0], roleCounts[1], roleCounts[2], roleCounts[3]);
@@ -457,5 +520,21 @@ public static class SaveExRand
         newData.startingAlignment = alignment;
         newData.type = type;
         return newData;
+    }
+    public static void swapMiddleCards()
+    {
+        if (cardIndex == 0)
+        {
+            cardIndex = 1;
+        }
+        else
+        {
+            cardIndex = 0;
+        }
+        foreach (GameObject card in middleCards)
+        {
+            card.SetActive(false);
+        }
+        middleCards[cardIndex].SetActive(true);
     }
 }
