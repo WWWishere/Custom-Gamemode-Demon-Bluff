@@ -100,6 +100,14 @@ public class ModMain : MelonMod
         joker.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         SaveExRand.customCharList.Add(joker);
         */
+        CharacterData cleric = SaveExRand.createCharData("Cleric", "3b", ECharacterType.Villager, EAlignment.Good,
+        new Cleric(), true);
+        cleric.bluffable = true;
+        cleric.description = "Heal 3 HP.\nIf Corrupted: Heal no HP\nIf Evil: Lose 3 HP, the kill this character.";
+        cleric.flavorText = "\"Once tried to heal Confessor's headache. She's been having migraines ever since.\"";
+        cleric.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        cleric.tags.Add(ECharacterTag.Corrupt);
+        SaveExRand.customCharList.Add(cleric);
         foreach (CharacterData customData in SaveExRand.customCharList)
         {
             SaveExRand.poolUnused.Add(customData.name);
