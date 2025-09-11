@@ -17,7 +17,7 @@ using Il2CppInterop.Runtime;
 using Il2CppTMPro;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.4", "SS122")]
+[assembly: MelonInfo(typeof(ModMain), "ExtraRandomized", "0.5", "SS122")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace ExtraRandomized;
@@ -52,6 +52,7 @@ public class ModMain : MelonMod
         psychic.description = "Learn 1 Truthful character.";
         psychic.flavorText = "\"Sees her friends' darkest secrets.\nUses it to know what food to get them.\"";
         psychic.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        psychic.characterId = "Psychic_ER";
         SaveExRand.customCharList.Add(psychic);
 
         CharacterData purifier = SaveExRand.createCharData("Purifier", "evil", (ECharacterType)30, (EAlignment)20, (Role)new Purifier());
@@ -60,6 +61,7 @@ public class ModMain : MelonMod
         purifier.flavorText = "\"No one dares to enter his lab.\"";
         purifier.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         purifier.tags.Add(ECharacterTag.Corrupt);
+        purifier.characterId = "Purifier_ER";
         SaveExRand.customCharList.Add(purifier);
         Characters.Instance.startGameActOrder = insertAfterAct("Alchemist", purifier);
 
@@ -69,6 +71,7 @@ public class ModMain : MelonMod
         hypno.description = "<b>Game Start:</b>\nOne random Villager becomes an unknown Minion.\n\nI Lie and Disguise.";
         hypno.flavorText = "\"You look nice today. How about we go out and have a lunch together?\"";
         hypno.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        hypno.characterId = "Hypnotist_ER";
         SaveExRand.customCharList.Add(hypno);
         Characters.Instance.startGameActOrder = insertAfterAct("Baa", hypno);
 
@@ -79,6 +82,7 @@ public class ModMain : MelonMod
         betterBaa.description = "One random Minion is added to the Deck View.\n\nI Lie and Disguise.";
         betterBaa.flavorText = "\"I am better than Baa.\nAnd I will prove it.\"";
         betterBaa.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        betterBaa.characterId = "Better Baa_ER";
         SaveExRand.customCharList.Add(betterBaa);
         Characters.Instance.startGameActOrder = insertAfterAct("Counsellor", betterBaa);
 
@@ -89,6 +93,7 @@ public class ModMain : MelonMod
         baatender.description = "One random Outcast is added to the Deck View.\nA random Villager becomes Drunk.\n\nI Lie and Disguise.";
         baatender.flavorText = "\"Ender of Baats.\nOr Tender of Baas\"";
         baatender.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
+        baatender.characterId = "Baatender_ER";
         SaveExRand.customCharList.Add(baatender);
         Characters.Instance.startGameActOrder = insertAfterAct("Counsellor", baatender);
         /*
@@ -107,6 +112,7 @@ public class ModMain : MelonMod
         cleric.flavorText = "\"Once tried to heal Confessor's headache. She's been having migraines ever since.\"";
         cleric.tags = new Il2CppSystem.Collections.Generic.List<ECharacterTag>();
         cleric.tags.Add(ECharacterTag.Corrupt);
+        cleric.characterId = "Cleric_ER";
         SaveExRand.customCharList.Add(cleric);
         foreach (CharacterData customData in SaveExRand.customCharList)
         {
